@@ -12,7 +12,7 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
         url = "https://jsearch.p.rapidapi.com/search"
 
         headers = {
-            "X-RapidAPI-Key": st.secrets("RAPIDAPI_KEY"),
+            "X-RapidAPI-Key": st.secrets["RAPIDAPI_KEY"],
             "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
         }
         params = {
