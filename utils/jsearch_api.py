@@ -1,5 +1,8 @@
 import os 
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def find_jobs(query, location=None, page=1, num_jobs=10):
     """Find jobs based on a query, location, page number, and number of jobs."""
@@ -12,10 +15,11 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
         }
         params = {
             "query": query,
-            "location": location,
             "page": page,
             "num_jobs": num_jobs
         }
+        if location:
+            params["location"] = location
         response = requests.get(url, headers=headers, params=params)
         
         if response.status_code != 200:
