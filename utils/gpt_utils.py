@@ -16,6 +16,7 @@ def generate_cover_letter(resume_text, job_description):
         cover_letter = response.choices[0].text.strip()
         return cover_letter
     except Exception as e:
+        st.error(f"GPT Error: {e}")
         print(f"An error occurred while generating the cover letter: {e}")
         return None
     
@@ -31,5 +32,6 @@ def summarize_resume_for_search(resume_text):
         summary = response.choices[0].text.strip()
         return summary
     except Exception as e:
+        st.error(f"GPT Error: {e}")
         print(f"An error occurred while summarizing the resume: {e}")
         return None
