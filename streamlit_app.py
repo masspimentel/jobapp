@@ -13,6 +13,10 @@ load_dotenv()
 st.set_page_config(page_title="Job Application Bot", page_icon=":briefcase:", layout="centered")
 st.title("Job Application Bot :briefcase:")
 
+st.button("Location", key="location_button", help="Click to set your location for job search")
+location = st.text_input("Enter your location (optional)", placeholder="e.g., Toronto, Canada")
+st.write("This app helps you find jobs based on your resume and a job description, and generates a cover letter for you.")
+
 resume_file = st.file_uploader("Upload your resume (PDF or DOCX)", type=["pdf", "docx"])
 job_description = st.text_area("Enter the job description")
 
