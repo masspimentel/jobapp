@@ -11,11 +11,8 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
     try:
         url = "https://jsearch.p.rapidapi.com/search"
 
-        print("RAPIDAPI_KEY:", os.getenv("RAPIDAPI_KEY"))
-        st.write("RAPIDAPI_HOST:", os.getenv("RAPIDAPI_HOST"))
-
         headers = {
-            "X-RapidAPI-Key": os.getenv("RAPIDAPI_KEY"),
+            "X-RapidAPI-Key": st.secrets("RAPIDAPI_KEY"),
             "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
         }
         params = {
@@ -33,12 +30,6 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
         results = response.json().get("data", [])[:num_jobs]
         if not results:
             raise ValueError("No jobs found for the given query.")
-        
-        print (response.json())
-        st.write("Jobs found:", len(results))
-        
-        print(results)
-        st.write("Results:", results)
         
         return results
     except Exception as e:

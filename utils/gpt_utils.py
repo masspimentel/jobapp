@@ -1,7 +1,8 @@
 import openai
 import os
+import streamlit as st
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = st.secrets("OPENAI_API_KEY")
 
 def generate_cover_letter(resume_text, job_description):
     """Generate a cover letter using OpenAI's GPT-3.5 model."""
