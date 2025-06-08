@@ -1,6 +1,8 @@
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
+import streamlit as st
+import json
 
 def log_to_sheets(sheet_id, values):
     """
@@ -10,9 +12,14 @@ def log_to_sheets(sheet_id, values):
         sheet_id (str): The ID of the Google Sheets document.
         values (list): A list of lists containing the values to log.
     """
-    creds = service_account.Credentials.from_service_account_file(
-        "service_account.json",
-        scopes=["https://www.googleapis.com/auth/spreadsheets"]
+    creds_json = st.secrets.get("GOOGLE_SERVICE_ACCOUNT")
+    creds_dict = json.loads(creds_json) if creds_json else None
+    if not creds_dict:
+        st.error("Google service account credentials not found in secrets.")
+        return None
+    creds = service_account.Credentials.from_service_account_info(
+        creds_dict,
+        scopes=["https://www.googleapis.com/auth/drive.file"]
     )
     
     service = build("sheets", "v4", credentials=creds)
