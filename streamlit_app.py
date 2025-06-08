@@ -20,7 +20,8 @@ if st.button("Find jobs and generate cover letter"):
     if not resume_file or not job_description:
         st.error("Please upload a resume and enter a job description.")
     else:
-        with tempfile.NamedTemporaryFile(delete=False) as temp:
+        extension = resume_file.name.split('.')[-1].lower()
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{extension}') as temp:
             temp.write(resume_file.read())
             temp_path = temp.name
         
