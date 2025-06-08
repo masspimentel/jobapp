@@ -9,6 +9,8 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
     try:
         url = "https://jsearch.p.rapidapi.com/search"
 
+        print("RAPIDAPI_KEY:", os.getenv("RAPIDAPI_KEY"))
+
         headers = {
             "X-RapidAPI-Key": os.getenv("RAPIDAPI_KEY"),
             "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
