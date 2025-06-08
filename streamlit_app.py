@@ -69,9 +69,6 @@ if st.button("Find jobs and generate cover letter"):
 
             job_titles = [job.get('job_title') or job.get('title') or f"Job {i+1}" for i, job in enumerate(jobs)]
             selected_job = st.selectbox("Select a job to generate a cover letter", job_titles) 
-            
-            selected_job_details = next(job for job in jobs if job['title'] == selected_job)
-            cover_letter = generate_cover_letter(resume_text, selected_job_details['description'])
 
             if st.button("Generate Cover Letter"):
                 # Find the selected job by matching title
