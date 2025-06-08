@@ -2,12 +2,14 @@ import openai
 import os
 import streamlit as st
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+api_key = st.secrets["OPENAI_API_KEY"]
+
+client = openai.OpenAI(api_key=api_key)
 
 def generate_cover_letter(resume_text, job_description):
     """Generate a cover letter using OpenAI's GPT-3.5 model."""
     try:
-        response = openai.Completion.create(
+        response = client.responses.create(
             model="gpt-4o",
             prompt=f"Generate a cover letter based on the following resume and job description:\n\nResume:\n{resume_text}\n\nJob Description:\n{job_description}\n\nCover Letter:",
             max_tokens=500,
@@ -23,7 +25,7 @@ def generate_cover_letter(resume_text, job_description):
 def summarize_resume_for_search(resume_text):
     """Summarize the resume text for job search."""
     try:
-        response = openai.Completion.create(
+        response = client.responses.create(
             model="gpt-4o",
             prompt=f"Summarize the following resume for job search:\n\n{resume_text}\n\nSummary:",
             max_tokens=200,
