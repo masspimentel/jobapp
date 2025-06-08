@@ -1,6 +1,6 @@
 import streamlit as st
 from utils.resume_parser import extract_resume_text
-from utils.jsearch_api import search_jobs
+from utils.jsearch_api import find_jobs as search_jobs
 from utils.gpt_utils import generate_cover_letter
 from utils.drive import upload_to_drive
 from utils.sheets import log_to_sheets
