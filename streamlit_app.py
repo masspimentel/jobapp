@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.resume_parser import extract_resume_text
 from utils.jsearch_api import find_jobs as search_jobs
-from utils.gpt_utils import generate_cover_letter, summarize_resume_for_search
+from utils.gpt_utils import generate_cover_letter, extract_job_search_keywords
 from utils.drive import upload_to_drive
 from utils.sheets import log_to_sheets
 import tempfile
@@ -16,6 +16,8 @@ st.title("Job Application Bot :briefcase:")
 st.button("Location", key="location_button", help="Click to set your location for job search")
 location = st.text_input("Enter your location (optional)", placeholder="e.g., Toronto, Canada")
 st.write("This app helps you find jobs based on your resume and a job description, and generates a cover letter for you.")
+
+job_title = st.text_input("Enter the job title you are looking for (optional)", placeholder="e.g., Software Engineer")
 
 resume_file = st.file_uploader("Upload your resume (PDF or DOCX)", type=["pdf", "docx"])
 job_description = st.text_area("Enter the job description")
@@ -32,18 +34,25 @@ if st.button("Find jobs and generate cover letter"):
         st.info("Extracting text from resume...")
         resume_text = extract_resume_text(temp_path)
 
-        if not resume_text:
-            st.error("Failed to extract text from the resume. Please check the file format.")
+        st.success("Resume text extracted successfully.")
+
+        st.info("Generating job search keywords from resume...")
+
+        if job_title:
+            resume_summary = extract_job_search_keywords(resume_text, job_title)
         else:
-            resume_summary = summarize_resume_for_search(resume_text)
-            st.success("Resume text extracted successfully.")
+            resume_summary = extract_job_search_keywords(resume_text, job_description)
             
         st.info("Searching for jobs...")
-        
-        st.write("🔍 Search query (from GPT):", resume_summary)
-        st.write("📍 Location input:", location)
 
-        jobs = search_jobs(resume_summary, job_description)
+        # Add before line 50:
+        st.write("Searching with query:", resume_summary[:100] + "..." if len(resume_summary) > 100 else resume_summary)
+        try:
+            jobs = search_jobs(resume_summary, location=location)
+            st.write(f"API response: {jobs if not isinstance(jobs, list) else 'Received job list'}")
+        except Exception as e:
+            st.error(f"Error searching for jobs: {e}")
+            jobs = []
 
         if not jobs:
             st.error("No jobs found for the given resume and job description.")
@@ -56,7 +65,7 @@ if st.button("Find jobs and generate cover letter"):
             selected_job = st.selectbox("Select a job to generate a cover letter", [job['title'] for job in jobs])
             if st.button("Generate Cover Letter"):
                 selected_job_details = next(job for job in jobs if job['title'] == selected_job)
-                cover_letter = generate_cover_letter(resume_text, selected_job_details['description'], job_description)
+                cover_letter = generate_cover_letter(resume_text, selected_job_details['description'])
 
                 if cover_letter:
                     st.success("Cover letter generated successfully.")

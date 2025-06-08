@@ -25,19 +25,25 @@ def generate_cover_letter(resume_text, job_description):
         print(f"An error occurred while generating the cover letter: {e}")
         return None
     
-def summarize_resume_for_search(resume_text):
-    """Summarize the resume text for job search."""
+def extract_job_search_keywords(resume_text, job_title=None):
+    """Extract specific keywords from resume for job search queries."""
     try:
+        prompt = "Extract 3-5 key skills and job titles from this resume that would be most effective for job searching. Return ONLY keywords separated by spaces, no commas or other punctuation."
+        if job_title:
+            prompt += f" Focus on skills relevant to {job_title} positions."
+            
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant that summarizes resumes for job search purposes."},
-                {"role": "user", "content": f"Summarize this resume into a concise summary that highlights key skills and experiences:\n\n{resume_text}"}
-            ]
+                {"role": "system", "content": "You are a helpful assistant that extracts relevant job search keywords from resumes."},
+                {"role": "user", "content": f"{prompt}\n\nResume:\n{resume_text}"}
+            ],
+            max_tokens=50,  # Shorter to keep it focused
+            temperature=0.3
         )
-        summary = response.choices[0].message.content.strip()
-        return summary
+        keywords = response.choices[0].message.content.strip()
+        return keywords
     except Exception as e:
         st.error(f"GPT Error: {e}")
-        print(f"An error occurred while summarizing the resume: {e}")
+        print(f"An error occurred while extracting resume keywords: {e}")
         return None
