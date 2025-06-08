@@ -29,6 +29,10 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
         if not results:
             raise ValueError("No jobs found for the given query.")
         
+        print (response.json())
+        
+        print(results)
+        
         return results
     except Exception as e:
         print(f"An error occurred while finding jobs: {e}")
