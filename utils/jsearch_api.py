@@ -6,6 +6,7 @@ load_dotenv()
 
 def find_jobs(query, location=None, page=1, num_jobs=10):
     """Find jobs based on a query, location, page number, and number of jobs."""
+    print("Finding jobs with query:", query)
     try:
         url = "https://jsearch.p.rapidapi.com/search"
 
