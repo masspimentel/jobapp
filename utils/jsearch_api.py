@@ -1,5 +1,6 @@
 import os 
 import requests
+import streamlit as st
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,6 +12,7 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
         url = "https://jsearch.p.rapidapi.com/search"
 
         print("RAPIDAPI_KEY:", os.getenv("RAPIDAPI_KEY"))
+        st.write("RAPIDAPI_HOST:", os.getenv("RAPIDAPI_HOST"))
 
         headers = {
             "X-RapidAPI-Key": os.getenv("RAPIDAPI_KEY"),
@@ -33,8 +35,10 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
             raise ValueError("No jobs found for the given query.")
         
         print (response.json())
+        st.write("Jobs found:", len(results))
         
         print(results)
+        st.write("Results:", results)
         
         return results
     except Exception as e:
