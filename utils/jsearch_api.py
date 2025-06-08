@@ -28,6 +28,10 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
             raise Exception(f"Error fetching jobs: {response.status_code} - {response.text}")
         
         results = response.json().get("data", [])[:num_jobs]
+
+        data = response.json()
+        st.write(data)
+
         if not results:
             raise ValueError("No jobs found for the given query.")
         
