@@ -39,6 +39,10 @@ if st.button("Find jobs and generate cover letter"):
             st.success("Resume text extracted successfully.")
             
         st.info("Searching for jobs...")
+        
+        st.write("🔍 Search query (from GPT):", resume_summary)
+        st.write("📍 Location input:", location)
+
         jobs = search_jobs(resume_summary, job_description)
 
         if not jobs:
