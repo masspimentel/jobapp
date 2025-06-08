@@ -67,31 +67,31 @@ if st.button("Find jobs and generate cover letter"):
                 job_posting = f"**{title}** at {company}\nLocation: {location}\nLink: [View Job]({job_link})"
                 st.markdown(job_posting)
 
-                job_titles = [job.get('job_title') or job.get('title') or f"Job {i+1}" for i, job in enumerate(jobs)]
-                selected_job = st.selectbox("Select a job to generate a cover letter", job_titles) 
+            job_titles = [job.get('job_title') or job.get('title') or f"Job {i+1}" for i, job in enumerate(jobs)]
+            selected_job = st.selectbox("Select a job to generate a cover letter", job_titles) 
+            
+            selected_job_details = next(job for job in jobs if job['title'] == selected_job)
+            cover_letter = generate_cover_letter(resume_text, selected_job_details['description'])
+
+            if st.button("Generate Cover Letter"):
+                # Find the selected job by matching title
+                selected_job_index = job_titles.index(selected_job)
+                selected_job_details = jobs[selected_job_index]
                 
-                selected_job_details = next(job for job in jobs if job['title'] == selected_job)
-                cover_letter = generate_cover_letter(resume_text, selected_job_details['description'])
+                # Get job description - might be under different keys
+                job_desc = selected_job_details.get('job_description') or selected_job_details.get('description') or "No description available"
+                
+                cover_letter = generate_cover_letter(resume_text, job_desc)
 
-                if st.button("Generate Cover Letter"):
-                    # Find the selected job by matching title
-                    selected_job_index = job_titles.index(selected_job)
-                    selected_job_details = jobs[selected_job_index]
-                    
-                    # Get job description - might be under different keys
-                    job_desc = selected_job_details.get('job_description') or selected_job_details.get('description') or "No description available"
-                    
-                    cover_letter = generate_cover_letter(resume_text, job_desc)
+                if st.button("Upload to Google Drive"):
+                    drive_link = upload_to_drive(cover_letter, selected_job['title'])
+                    st.success(f"Cover letter uploaded to Google Drive: {drive_link}")
 
-                    if st.button("Upload to Google Drive"):
-                        drive_link = upload_to_drive(cover_letter, selected_job['title'])
-                        st.success(f"Cover letter uploaded to Google Drive: {drive_link}")
-
-                    if st.button("Log to Google Sheets"):
-                        log_to_sheets(selected_job_details, cover_letter)
-                        st.success("Job and cover letter logged to Google Sheets.")
-                else:
-                    st.error("Failed to generate cover letter.")
+                if st.button("Log to Google Sheets"):
+                    log_to_sheets(selected_job_details, cover_letter)
+                    st.success("Job and cover letter logged to Google Sheets.")
+            else:
+                st.error("Failed to generate cover letter.")
         os.remove(temp_path)
         
         
