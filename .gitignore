@@ -1,0 +1,9 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+venv/
+JobAppBot/
+__pycache__/
+*.pyc 
+*.log
+.env
+service_account.json
+cover_letter.txt
