@@ -68,27 +68,72 @@ if st.button("Find jobs and generate cover letter"):
                 st.markdown(job_posting)
 
             job_titles = [job.get('job_title') or job.get('title') or f"Job {i+1}" for i, job in enumerate(jobs)]
-            selected_job = st.selectbox("Select a job to generate a cover letter", job_titles) 
+            
+            # Initialize session state variables if they don't exist
+            if 'generated_cover_letter' not in st.session_state:
+                st.session_state.generated_cover_letter = None
+            if 'selected_job_details_for_cl' not in st.session_state:
+                st.session_state.selected_job_details_for_cl = None
+            if 'current_selectbox_job_title' not in st.session_state:
+                st.session_state.current_selectbox_job_title = None
+
+            selected_job_title_from_selectbox = st.selectbox(
+                "Select a job to generate a cover letter", 
+                job_titles,
+                key="job_selection_for_cover_letter" # Add a key for stability
+            )
+
+            # If the user changes the selection in the dropdown, clear the old cover letter
+            if st.session_state.current_selectbox_job_title != selected_job_title_from_selectbox:
+                st.session_state.generated_cover_letter = None
+                st.session_state.selected_job_details_for_cl = None
+                st.session_state.current_selectbox_job_title = selected_job_title_from_selectbox
 
             if st.button("Generate Cover Letter"):
-                # Find the selected job by matching title
-                selected_job_index = job_titles.index(selected_job)
-                selected_job_details = jobs[selected_job_index]
+                # Clear any previous cover letter from session state before generating a new one
+                st.session_state.generated_cover_letter = None
+                st.session_state.selected_job_details_for_cl = None
+
+                selected_job_index = job_titles.index(selected_job_title_from_selectbox)
+                current_selected_job_details = jobs[selected_job_index]
                 
-                # Get job description - might be under different keys
-                job_desc = selected_job_details.get('job_description') or selected_job_details.get('description') or "No description available"
+                job_desc = current_selected_job_details.get('job_description') or current_selected_job_details.get('description') or "No description available"
                 
-                cover_letter = generate_cover_letter(resume_text, job_desc)
+                with st.spinner("Generating cover letter..."):
+                    # generate_cover_letter should handle its own internal errors (e.g., API issues)
+                    # and return None if it fails.
+                    cover_letter_text = generate_cover_letter(resume_text, job_desc)
+                
+                if cover_letter_text:
+                    st.session_state.generated_cover_letter = cover_letter_text
+                    st.session_state.selected_job_details_for_cl = current_selected_job_details
+                    st.success("Cover letter generated successfully!")
+                else:
+                    # This error is shown if generate_cover_letter returns None
+                    st.error("Failed to generate cover letter. The GPT service might have encountered an issue or returned no content.")
+
+            # Display the cover letter and action buttons if it exists in session state
+            if st.session_state.generated_cover_letter and st.session_state.selected_job_details_for_cl:
+                st.subheader("Generated Cover Letter")
+                st.text_area("Preview:", st.session_state.generated_cover_letter, height=300, key="cover_letter_preview")
+
+                # Use the job details stored in session state for these actions
+                job_details_for_actions = st.session_state.selected_job_details_for_cl
+                action_job_title = job_details_for_actions.get('job_title') or job_details_for_actions.get('title') or "Selected Job"
 
                 if st.button("Upload to Google Drive"):
-                    drive_link = upload_to_drive(cover_letter, selected_job['title'])
-                    st.success(f"Cover letter uploaded to Google Drive: {drive_link}")
+                    with st.spinner("Uploading to Google Drive..."):
+                        drive_link = upload_to_drive(st.session_state.generated_cover_letter, action_job_title)
+                    if drive_link:
+                        st.success(f"Cover letter uploaded to Google Drive: {drive_link}")
+                    else:
+                        st.error("Failed to upload to Google Drive.") # upload_to_drive should ideally signal success/failure
 
                 if st.button("Log to Google Sheets"):
-                    log_to_sheets(selected_job_details, cover_letter)
+                    with st.spinner("Logging to Google Sheets..."):
+                        # Assuming log_to_sheets handles its own errors or returns a status
+                        log_to_sheets(job_details_for_actions, st.session_state.generated_cover_letter)
                     st.success("Job and cover letter logged to Google Sheets.")
-            else:
-                st.error("Failed to generate cover letter.")
         os.remove(temp_path)
         
         
