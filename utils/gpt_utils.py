@@ -8,7 +8,7 @@ def generate_cover_letter(resume_text, job_description):
     """Generate a cover letter using OpenAI's GPT-3.5 model."""
     try:
         response = openai.Completion.create(
-            model="gpt-4.1-mini",
+            model="gpt-4o",
             prompt=f"Generate a cover letter based on the following resume and job description:\n\nResume:\n{resume_text}\n\nJob Description:\n{job_description}\n\nCover Letter:",
             max_tokens=500,
             temperature=0.7
@@ -23,7 +23,7 @@ def summarize_resume_for_search(resume_text):
     """Summarize the resume text for job search."""
     try:
         response = openai.Completion.create(
-            model="gpt-4.1-mini",
+            model="gpt-4o",
             prompt=f"Summarize the following resume for job search:\n\n{resume_text}\n\nSummary:",
             max_tokens=200,
             temperature=0.5
