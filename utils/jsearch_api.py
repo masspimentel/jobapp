@@ -29,8 +29,6 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
         
         results = response.json().get("data", [])[:num_jobs]
 
-        data = response.json()
-        st.write(data)
 
         if not results:
             raise ValueError("No jobs found for the given query.")

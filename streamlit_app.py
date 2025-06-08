@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.resume_parser import extract_resume_text
 from utils.jsearch_api import find_jobs as search_jobs
-from utils.gpt_utils import generate_cover_letter
+from utils.gpt_utils import generate_cover_letter, summarize_resume_for_search
 from utils.drive import upload_to_drive
 from utils.sheets import log_to_sheets
 import tempfile
@@ -35,10 +35,11 @@ if st.button("Find jobs and generate cover letter"):
         if not resume_text:
             st.error("Failed to extract text from the resume. Please check the file format.")
         else:
+            resume_summary = summarize_resume_for_search(resume_text)
             st.success("Resume text extracted successfully.")
             
         st.info("Searching for jobs...")
-        jobs = search_jobs(resume_text, job_description)
+        jobs = search_jobs(resume_summary, job_description)
 
         if not jobs:
             st.error("No jobs found for the given resume and job description.")

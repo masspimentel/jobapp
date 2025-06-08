@@ -18,3 +18,18 @@ def generate_cover_letter(resume_text, job_description):
     except Exception as e:
         print(f"An error occurred while generating the cover letter: {e}")
         return None
+    
+def summarize_resume_for_search(resume_text):
+    """Summarize the resume text for job search."""
+    try:
+        response = openai.Completion.create(
+            model="gpt-4.1-mini",
+            prompt=f"Summarize the following resume for job search:\n\n{resume_text}\n\nSummary:",
+            max_tokens=200,
+            temperature=0.5
+        )
+        summary = response.choices[0].text.strip()
+        return summary
+    except Exception as e:
+        print(f"An error occurred while summarizing the resume: {e}")
+        return None
