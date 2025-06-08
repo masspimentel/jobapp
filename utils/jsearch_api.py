@@ -11,6 +11,7 @@ def find_jobs(query, location=None, page=1, num_jobs=10):
     try:
         url = "https://jsearch.p.rapidapi.com/search"
 
+        st.write(f"RADIPAPI_KEY: {st.secrets['RAPIDAPI_KEY']}")
         headers = {
             "X-RapidAPI-Key": st.secrets["RAPIDAPI_KEY"],
             "X-RapidAPI-Host": "jsearch.p.rapidapi.com"
